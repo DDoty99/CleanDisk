@@ -1,21 +1,21 @@
 @echo off
 @echo off & setlocal ENABLEDELAYEDEXPANSION
+
+:: Prints Current Disk Usage
 SET "volume=C:"
 FOR /f "tokens=1*delims=:" %%i IN ('fsutil volume diskfree %volume%') DO (
     SET "diskfree=!disktotal!"
     SET "disktotal=!diskavail!"
     SET "diskavail=%%j"
 )
-echo "DiskCleanup2Quick"
-
 SET /a diskused=%disktotal:~0,-9% - %diskavail:~0,-9%
 ECHO(Information for volume %volume%
 ECHO(TOTAL SIZE  ---------- %disktotal:~0,-9% GB
 ECHO(AVAILABLE SIZE ------- %diskavail:~0,-9% GB
 ECHO(USED SIZE ------------ %diskused% GB
+echo "DiskCleanup2Quick"
 
-
-
+::Stolen From Tron Script
 :: Previous Windows versions cleanup. These are left behind after upgrading an installation from XP/Vista/7/8 to a higher version
 if exist %SystemDrive%\Windows.old\ (
 	takeown /F %SystemDrive%\Windows.old\* /R /A /D Y
@@ -110,11 +110,14 @@ del /F /Q %WINDIR%\*.tmp 2>NUL
 ::      these only exist on Vista and up, so we look for "Microsoft", and assuming we don't find it, clear out the folder
 del /F /Q %WINDIR%\Logs\CBS\* 2>NUL
 
-
+:: Clears IE Cache Within IE
 rundll32.exe inetcpl.cpl,ClearMyTracksByProcess 4351
+
+::Stops Windows Update Service and clears cached downloads
 net stop WUAUSERV
 	if exist %windir%\softwaredistribution\download rmdir /s /q %windir%\softwaredistribution\download
 	net start WUAUSERV
+:: Echos Current Disk Usage After Cleaning
 @echo off & setlocal ENABLEDELAYEDEXPANSION
 SET "volume=C:"
 FOR /f "tokens=1*delims=:" %%i IN ('fsutil volume diskfree %volume%') DO (
@@ -122,8 +125,6 @@ FOR /f "tokens=1*delims=:" %%i IN ('fsutil volume diskfree %volume%') DO (
     SET "disktotal=!diskavail!"
     SET "diskavail=%%j"
 )
-echo "DiskCleanup2Quick"
-
 SET /a diskused=%disktotal:~0,-9% - %diskavail:~0,-9%
 ECHO(Information for volume %volume%
 ECHO(TOTAL SIZE  ---------- %disktotal:~0,-9% GB
